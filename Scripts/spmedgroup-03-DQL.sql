@@ -16,3 +16,10 @@ select * from Paciente
 select * from Especialidade
 select * from TipoUsuario
 select * from Clinica
+
+select count (*) as Medicos from Medico 
+where Medico.IdEspecialidade = 2
+
+select convert (varchar,getdate(),1)
+
+exec IdadePaciente;

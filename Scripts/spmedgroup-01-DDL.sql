@@ -17,7 +17,7 @@ go
 
 create table Usuario (
 	IdUsuario int primary key identity,
-	Email varchar (100) not null,
+	Email varchar (100) not null unique,
 	Senha varchar (100) not null,
 	IdTipoUsuario int foreign key references TipoUsuario (IdTipoUsuario)
 );
@@ -31,7 +31,7 @@ go
 create table Medico (
 	IdMedico	int primary key identity,
 	Nome varchar (100) not null,
-	CRM			varchar (100),
+	CRM			varchar (100) unique,
 	IdUsuario int foreign key references Usuario (IdUsuario),
 	IdClinica int foreign key references Clinica (IdClinica) ,
 	IdEspecialidade int foreign key references Especialidade (IdEspecialidade)
@@ -41,8 +41,8 @@ go
 create table Paciente (
 	IdPaciente	int primary key identity,
 	Nome varchar (100) not null,
-	CPF		 varchar (50),
-	RG		 varchar (50),
+	CPF		 varchar (50) unique,
+	RG		 varchar (50) unique,
 	Endereco varchar (100),
 	DataNascimento date,
 	Telefone varchar(50),
@@ -64,4 +64,19 @@ create table Consulta (
 	IdMedico int foreign key references Medico (IdMedico),
 	IdSituacao int foreign key references Situacao (IdSituacao)
 );
+go
+create procedure IdadePaciente
+as 
+select 
+Nome,
+CPF,
+format (DataNascimento, 'MM/dd/yyyy') as DataNascimento,
+convert(varchar,GETDATE(),1) as [DataHoje],
+datediff (YY,DataNascimento,getdate()) -
+case 
+	when dateadd(YY,datediff(YY,DataNascimento,getdate()), DataNascimento)
+		> getdate() then 1
+	else 0
+end as [Idade]
+from Paciente;
 go

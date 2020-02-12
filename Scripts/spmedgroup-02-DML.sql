@@ -24,8 +24,8 @@ values  ('ademir@email.com', '123456789', 3),
 		('nicolas@email.com', '123456789', 2)
 
 insert into Paciente (Nome,CPF,RG,Endereco,DataNascimento,Telefone,IdUsuario)
-values  ('Rogerio','955.323.638-38', '44.205.030-6', 'Rua Benedicto Leite', '2002-05-19', '11982973275',2),
-		('Paulo','066.153.588-67', '12.018.568-4', 'Rua Doutor José Foz', '2002-06-19', '11982973275',3)
+values  ('Rogerio','95532363838', '442050306', 'Rua Benedicto Leite', '2002-05-19', '11982973275',2),
+		('Paulo','06615358867', '120185684', 'Rua Doutor José Foz', '2002-06-19', '11982973275',3)
 go
 insert into Medico (Nome,CRM,IdClinica,IdEspecialidade,IdUsuario)
 values	('Eduardo','3234213',1,2,3),

@@ -18,7 +18,7 @@ go
 
 create table Usuario (
 	IdUsuario int primary key identity,
-	Email varchar (100) not null,
+	Email varchar (100) not null unique,
 	Senha varchar (100) not null,
 	IdTipoUsuario int foreign key references TipoUsuario (IdTipoUsuario)
 );
@@ -32,7 +32,7 @@ go
 create table Medico (
 	IdMedico	int primary key identity,
 	Nome varchar (100) not null,
-	CRM			varchar (100),
+	CRM			varchar (100) unique,
 	IdUsuario int foreign key references Usuario (IdUsuario),
 	IdClinica int foreign key references Clinica (IdClinica) ,
 	IdEspecialidade int foreign key references Especialidade (IdEspecialidade)
@@ -42,8 +42,8 @@ go
 create table Paciente (
 	IdPaciente	int primary key identity,
 	Nome varchar (100) not null,
-	CPF		 varchar (50),
-	RG		 varchar (50),
+	CPF		 varchar (50) unique,
+	RG		 varchar (50) unique,
 	Endereco varchar (100),
 	DataNascimento date,
 	Telefone varchar(50),
@@ -66,6 +66,22 @@ create table Consulta (
 	IdSituacao int foreign key references Situacao (IdSituacao)
 );
 go
+create procedure IdadePaciente
+as 
+select 
+Nome,
+CPF,
+format (DataNascimento, 'MM/dd/yyyy') as DataNascimento,
+convert(varchar,GETDATE(),1) as [DataHoje],
+datediff (YY,DataNascimento,getdate()) -
+case 
+	when dateadd(YY,datediff(YY,DataNascimento,getdate()), DataNascimento)
+		> getdate() then 1
+	else 0
+end as [Idade]
+from Paciente;
+go
+
 ------------------------------------------------------DML------------------------------------------------------------
 
 insert into Clinica (RazaoSocial,Endereco)
@@ -94,8 +110,8 @@ values  ('ademir@email.com', '123456789', 3),
 		('nicolas@email.com', '123456789', 2)
 
 insert into Paciente (Nome,CPF,RG,Endereco,DataNascimento,Telefone,IdUsuario)
-values  ('Rogerio','955.323.638-38', '44.205.030-6', 'Rua Benedicto Leite', '2002-05-19', '11982973275',2),
-		('Paulo','066.153.588-67', '12.018.568-4', 'Rua Doutor José Foz', '2002-06-19', '11982973275',3)
+values  ('Rogerio','95532363838', '442050306', 'Rua Benedicto Leite', '2002-05-19', '11982973275',2),
+		('Paulo','06615358867', '120185684', 'Rua Doutor José Foz', '2002-06-19', '11982973275',3)
 go
 insert into Medico (Nome,CRM,IdClinica,IdEspecialidade,IdUsuario)
 values	('Eduardo','3234213',1,2,3),
@@ -114,6 +130,7 @@ insert into Consulta (DataConsulta,Descricao,IdPaciente,IdMedico,IdSituacao)
 values  ('30/01/2019','Queixa de dores',2,3,1),
 		('30/01/2018','Dores',1,4,2)
 go
+
 ------------------------------------------------------DQL------------------------------------------------------------
 
 select Email,Senha,TipoUsuario.TituloTipoUsuario from Usuario
@@ -134,3 +151,10 @@ select * from Paciente
 select * from Especialidade
 select * from TipoUsuario
 select * from Clinica
+
+select count (*) as Medicos from Medico 
+where Medico.IdEspecialidade = 2
+
+
+exec IdadePaciente;
+
